@@ -1,0 +1,35 @@
+h1 {
+    font-family: 'Rubik', sans-serif;
+    color: #e75480;
+    margin-top: 40px;
+  }
+
+  .voltar img {
+    width: 30px;
+  }
+
+  .perfil-admin {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .perfil-admin img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .perfil-admin nav a {
+    margin-left: 10px;
+    color: #e75480;
+    text-decoration: none;
+  }
+
+  .perfil-admin nav a:hover {
+    text-decoration: underline;
+  }
