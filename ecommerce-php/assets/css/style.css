@@ -23,7 +23,7 @@ a {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 1000;
+    z-index: 2000;
     background-color: #fff;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -119,7 +119,7 @@ a {
 
 .icone-link i {
     font-size: 22px;
-    color: #CE2870;
+    color: #be1a77;
 }
 
 @media (max-width: 768px) {
@@ -137,7 +137,7 @@ a {
     position: absolute;
     top: -5px; 
     right: -5px; 
-    background-color: #CE2870; 
+    background-color: #be1a77; 
     color: white; 
     min-width: 18px; 
     height: 18px;
@@ -188,7 +188,7 @@ a {
 }
 
 .novo-menu-principal {
-    background-color: #CE2870;
+    background-color: #be1a77;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -287,7 +287,7 @@ a {
 }
 
 .btn-adicionar-sacola {
-    background-color: #CE2870;
+    background-color: #be1a77;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -302,4 +302,54 @@ a {
 
 .btn-adicionar-sacola:hover {
     background-color: #a31f58;
+}
+
+/* ======== CORREÇÃO DE CAMADAS (Z-INDEX E CLIQUES) ======== */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 900;
+  display: none;
+  pointer-events: none;
+}
+
+.overlay.ativo {
+  display: block;
+  pointer-events: all;
+}
+
+.header-fixo {
+  z-index: 2000;
+}
+
+.menu-lateral {
+  position: fixed;
+  top: 0;
+  left: -250px;
+  width: 250px;
+  height: 100%;
+  background: #fff;
+  z-index: 1500;
+  transition: left 0.3s ease;
+}
+
+.menu-lateral.ativo {
+  left: 0;
+}
+
+.catalogo, .conteudo-produto, .produto {
+  position: relative;
+  z-index: 1;
+}
+
+.produto form,
+.produto a,
+.perfil-menu-container a,
+.sacola-link {
+  pointer-events: all !important;
 }

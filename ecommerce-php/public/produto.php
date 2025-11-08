@@ -1,32 +1,62 @@
 <?php
 session_start();
 include '../includes/conexao.php';
-include '../includes/funcoes.php';
 
-$usuario_logado = $_SESSION['usuario'] ?? null;
-$usuario_is_admin = false;
-$usuario_nome = '';
-$usuario_imagem = '';
-
-if ($usuario_logado && is_array($usuario_logado)) {
-    $usuario_is_admin = ($usuario_logado['tipo'] ?? '') === 'admin';
-    $usuario_nome = $usuario_logado['nome'] ?? '';
-    $usuario_imagem = $usuario_logado['imagem'] ?? '';
+function get_css_version($filepath)
+{
+    if (file_exists($filepath)) {
+        return filemtime($filepath);
+    }
+    return time();
 }
 
 $id = $_GET['id'] ?? null;
+
 if (!$id) {
-    echo "Produto não encontrado.";
+    header('Location: ../index.php');
     exit;
 }
 
 $stmt = $pdo->prepare("SELECT * FROM produtos WHERE id = :id");
-$stmt->execute(['id' => $id]);
+$stmt->bindParam(':id', $id, PDO::PARAM_INT);
+$stmt->execute();
 $produto = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$produto) {
-    echo "Produto não encontrado.";
+    header('Location: ../index.php');
     exit;
+}
+
+// Produtos relacionados (mesma categoria)
+$stmt_relacionados = $pdo->prepare("SELECT * FROM produtos WHERE categoria = :categoria AND id != :id LIMIT 4");
+$stmt_relacionados->execute([':categoria' => $produto['categoria'], ':id' => $produto['id']]);
+$relacionados = $stmt_relacionados->fetchAll(PDO::FETCH_ASSOC);
+
+// Dados do usuário
+$usuario_logado = false;
+$usuario_nome = '';
+$usuario_imagem = '';
+$usuario_is_admin = false;
+
+if (isset($_SESSION['usuario_id'])) {
+    $usuario_id = $_SESSION['usuario_id'];
+    $stmt = $pdo->prepare("SELECT nome, imagem, is_admin FROM usuarios WHERE id = :id");
+    $stmt->bindParam(':id', $usuario_id);
+    $stmt->execute();
+    $usuario = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($usuario) {
+        $usuario_nome = $usuario['nome'];
+        $usuario_imagem = $usuario['imagem'] ? $usuario['imagem'] : 'default-avatar.jpg';
+        $usuario_is_admin = ($usuario['is_admin'] == 1);
+    }
+
+    $usuario_logado = true;
+}
+
+$total_itens_carrinho = 0;
+if (isset($_SESSION['carrinho']) && is_array($_SESSION['carrinho'])) {
+    $total_itens_carrinho = count($_SESSION['carrinho']);
 }
 ?>
 
@@ -35,110 +65,137 @@ if (!$produto) {
 
 <head>
     <meta charset="UTF-8">
-    <title><?php echo htmlspecialchars($produto['nome']); ?></title>
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Rubik:wght@500;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="../assets/css/produto.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><?php echo htmlspecialchars($produto['nome']); ?> | Um Convite de Casamento</title>
+    <link rel="icon" href="../assets/images/sistema/carta_fechada.png" type="image/png">
+
+    <link rel="stylesheet" href="../assets/css/header.css?v=<?php echo get_css_version('../assets/css/header.css'); ?>">
+    <link rel="stylesheet" href="../assets/css/style.css?v=<?php echo get_css_version('../assets/css/style.css'); ?>">
+    <link rel="stylesheet" href="../assets/css/produto.css?v=<?php echo get_css_version('../assets/css/produto.css'); ?>">
+    <link rel="stylesheet"
+        href="../assets/css/menu-lateral.css?v=<?php echo get_css_version('../assets/css/menu-lateral.css'); ?>">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
 </head>
 
 <body>
+    <header class="header-fixo">
+        <div class="header-superior">
 
-    <div class="pagina-container">
-        <header>
-            <div class="logo-central">
-                <a href="../index.php">
-                    <img src="../assets/images/sistema/logo01.png" alt="Voltar ao Catálogo" />
+            <!-- Ícone Menu Hamburguer -->
+            <div class="menu-hamburguer" onclick="toggleMenu()">
+                <i class="fas fa-bars"></i>
+            </div>
+
+            <!-- Logo Centralizada -->
+            <div class="logo">
+                <img src="../assets/images/sistema/logo01.png" alt="Logo" class="logo-img">
+            </div>
+
+            <!-- Ícones à direita -->
+            <div class="icones-header-direita">
+                <div class="icone-texto-container perfil-menu-container">
+                    <a href="<?php echo $usuario_logado ? 'public/perfil.php' : 'public/login_registro.php'; ?>"
+                        class="icone-link" id="perfil-link">
+                        <i class='bx bx-user'></i>
+                    </a>
+
+                    <?php if ($usuario_logado): ?>
+                        <div class="perfil-dropdown" id="perfil-dropdown">
+                            <a href="public/perfil.php">Gerenciar Perfil</a>
+                            <?php if ($usuario_is_admin): ?>
+                                <a href="admin/painel.php">Painel Admin</a>
+                            <?php endif; ?>
+                            <a href="public/logout.php" class="logout-btn">Sair</a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+
+                <a href="public/carrinho.php" class="icone-link sacola-link">
+                    <i class='bx bx-shopping-bag'></i>
+                    <?php if ($total_itens_carrinho > 0): ?>
+                        <span class="cart-notification"><?php echo $total_itens_carrinho; ?></span>
+                    <?php endif; ?>
                 </a>
             </div>
 
-            <div class="voltar">
-                <a href="../index.php">
-                    <img src="../assets/images/sistema/back.png" alt="Voltar ao Catálogo" />
-                </a>
+            <!-- Barra de pesquisa (visível só no desktop) -->
+            <div class="search-bar-container desktop-search">
+                <input type="text" class="search-input" placeholder="Buscar produtos...">
+                <button class="search-button"><i class="fas fa-search"></i></button>
             </div>
 
-            <div class="perfil-admin">
-                <a href="carrinho.php" title="Carrinho">
-                    <img src="../assets/images/sistema/carrinho.png" alt="Carrinho" />
-                </a>
-                <?php if ($usuario_logado): ?>
-                    <img
-                        src="<?php echo !empty($usuario_imagem) ? 'uploads/' . htmlspecialchars($usuario_imagem) : '../assets/images/default.png'; ?>"
-                        alt="Perfil" />
-                    <div>
-                        <p><strong><?php echo htmlspecialchars($usuario_nome); ?></strong></p>
-                        <nav>
-                            <a href="public/perfil.php">Perfil</a>
-                            <a href="public/logout.php">Sair</a>
-                        </nav>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </header>
+        </div>
 
-        <div class="produto-detalhe-container">
-            <div class="produto-imagem">
-                <img src="../assets/images/produtos/<?php echo htmlspecialchars($produto['imagem']); ?>"
+        <!-- Menu Lateral Deslizante -->
+        <nav class="menu-lateral" id="menuLateral">
+            <div class="menu-lateral-conteudo">
+                <button class="fechar-menu" onclick="toggleMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
+
+                <div class="menu-search-container">
+                    <input type="text" class="menu-search-input" placeholder="Buscar produtos...">
+                    <button class="menu-search-button"><i class="fas fa-search"></i></button>
+                </div>
+
+                <ul class="menu-links">
+                    <li><a href="index.php">Início</a></li>
+                    <li><a href="#">Categorias</a></li>
+                    <li><a href="#">Promoções</a></li>
+                    <li><a href="public/contato.php">Contato</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Overlay -->
+        <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    </header>
+
+
+    <main class="produto-detalhe-container">
+        <div class="produto-detalhe">
+            <div class="imagem-produto">
+                <img src="../assets/images/produtos/<?php echo $produto['imagem']; ?>"
                     alt="<?php echo htmlspecialchars($produto['nome']); ?>">
             </div>
-            <div class="produto-info">
-                <h1><?php echo htmlspecialchars($produto['nome']); ?></h1>
-                <p class="preco">
-                    Preço unitário: R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?><br>
-                    <span id="total-preco">Total: R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></span>
-                </p>
-                <p class="descricao"><?php echo nl2br(htmlspecialchars($produto['descricao'])); ?></p>
 
-                <form class="form-adicionar" action="adicionar_ao_carrinho.php" method="POST">
+            <div class="info-produto">
+                <h1><?php echo htmlspecialchars($produto['nome']); ?></h1>
+                <p class="categoria">Categoria: <?php echo htmlspecialchars($produto['categoria'] ?? 'Não especificada'); ?></p>
+                <p class="preco">R$ <?php echo number_format($produto['preco'], 2, ',', '.'); ?></p>
+
+                <form action="adicionar_ao_carrinho.php" method="POST">
                     <input type="hidden" name="produto_id" value="<?php echo $produto['id']; ?>">
-                    <div class="form-linha">
-                        <label for="quantidade">Quantidade:</label>
-                        <input type="number" name="quantidade" id="quantidade" value="1" min="1" required class="quantidade-input">
-                    </div>
-                    <button type="submit" class="btn-adicionar">Adicionar ao Carrinho</button>
+                    <input type="hidden" name="quantidade" value="1">
+                    <button type="submit" class="btn-adicionar-sacola">Adicionar à sacola</button>
                 </form>
             </div>
         </div>
 
-        <footer>
-            <h3>Um convite de casamento</h3>
-            <ul class="footer-sociais">
-                <li><a href="#"><img src="../assets/images/sistema/instagram.png" alt="Instagram" /></a></li>
-                <li><a href="#"><img src="../assets/images/sistema/twitter.png" alt="Twitter" /></a></li>
-                <li><a href="#"><img src="../assets/images/sistema/facebook.png" alt="Facebook" /></a></li>
-                <li><a href="#"><img src="../assets/images/sistema/linkedin.png" alt="LinkedIn" /></a></li>
-            </ul>
-            <div class="footer-bottom">
-                <p class="footer-p">&copy; 2025 Um Convite de Casamento - Todos os direitos reservados</p>
-            </div>
-        </footer>
-    </div>
+        <?php if ($relacionados): ?>
+            <section class="produtos-relacionados">
+                <h2>Produtos Relacionados</h2>
+                <div class="lista-relacionados">
+                    <?php foreach ($relacionados as $item): ?>
+                        <div class="produto-relacionado" onclick="abrirProduto(<?php echo $item['id']; ?>)">
+                            <img src="../assets/images/produtos/<?php echo $item['imagem']; ?>"
+                                alt="<?php echo htmlspecialchars($item['nome']); ?>">
+                            <h3><?php echo htmlspecialchars($item['nome']); ?></h3>
+                            <span class="preco">R$ <?php echo number_format($item['preco'], 2, ',', '.'); ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </section>
+        <?php endif; ?>
+    </main>
 
-    <!-- Script para atualizar o preço total -->
+    <script src="../assets/js/menu-lateral.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const precoUnitario = <?php echo json_encode($produto['preco']); ?>;
-            const inputQuantidade = document.getElementById('quantidade');
-            const spanTotal = document.getElementById('total-preco');
-
-            function atualizarPrecoTotal() {
-                const quantidade = parseInt(inputQuantidade.value) || 1;
-                const total = (precoUnitario * quantidade).toFixed(2);
-                spanTotal.textContent = 'Total: R$ ' + total.replace('.', ',');
-            }
-
-            inputQuantidade.addEventListener('input', atualizarPrecoTotal);
-        });
-    </script>
-    <div vw class="enabled">
-        <div vw-access-button class="active"></div>
-        <div vw-plugin-wrapper>
-            <div class="vw-plugin-top-wrapper"></div>
-        </div>
-    </div>
-    <script src="https://vlibras.gov.br/app/vlibras-plugin.js"></script>
-    <script>
-        new window.VLibras.Widget('https://vlibras.gov.br/app');
+        function abrirProduto(id) {
+            window.location.href = 'produto.php?id=' + id;
+        }
     </script>
 </body>
 

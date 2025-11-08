@@ -1,0 +1,189 @@
+/* ===== AJUSTE RESPONSIVO HEADER ===== */
+@media (max-width: 768px) {
+
+  .header-superior {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 15px;
+    position: relative;
+  }
+
+  /* Ícone do menu hambúrguer */
+  .menu-hamburguer {
+    display: block;
+    cursor: pointer;
+    font-size: 26px;
+    color: #CE2870;
+    order: 1;
+  }
+
+  /* Logo + barra de pesquisa no centro */
+  .logo-search-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    order: 2;
+    gap: 8px;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .logo-img {
+    max-height: 30px;
+  }
+
+  .search-bar-container {
+    flex: 1;
+    max-width: 180px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    background-color: #fff;
+  }
+
+  .search-bar-container input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  .search-bar-container button {
+    background: none;
+    border: none;
+    padding: 8px;
+    font-size: 18px;
+    color: #CE2870;
+    cursor: pointer;
+  }
+
+  /* Ícones de perfil e carrinho no canto direito */
+  .icones-header-direita {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    order: 3;
+  }
+
+  .icone-link i {
+    font-size: 22px;
+  }
+
+  /* Ajuste geral */
+  .header-fixo {
+    height: auto;
+    padding-bottom: 10px;
+  }
+
+  .pagina-container {
+    padding-top: 130px;
+  }
+}
+
+/* ===== MENU LATERAL ===== */
+.menu-lateral {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 260px;
+  height: 100%;
+  background-color: #fff;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-lateral.aberto {
+  left: 0;
+}
+
+.menu-lateral-conteudo {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.fechar-menu {
+  background: none;
+  border: none;
+  align-self: flex-end;
+  font-size: 24px;
+  color: #CE2870;
+  cursor: pointer;
+}
+
+.menu-search-container {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.menu-search-input {
+  border: none;
+  outline: none;
+  flex: 1;
+  padding: 10px;
+}
+
+.menu-search-button {
+  background: none;
+  border: none;
+  padding: 10px;
+  font-size: 18px;
+  color: #333;
+  cursor: pointer;
+}
+
+.menu-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-links li {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.menu-links a {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  padding: 10px 0;
+  font-weight: 500;
+}
+
+.menu-links a:hover {
+  color: #CE2870;
+}
+
+/* Fundo escurecido quando o menu abre */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  display: none;
+  z-index: 1500;
+}
+
+.overlay.mostrar {
+  display: block;
+}
