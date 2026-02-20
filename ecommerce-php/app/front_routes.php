@@ -8,7 +8,7 @@ return [
     '/logout' => ['GET' => 'auth.logout'],
 
     '/carrinho' => ['GET' => 'cart.index'],
-    '/carrinho/adicionar' => ['POST' => 'cart.add'],
+    '/carrinho/adicionar' => ['GET' => 'cart.add', 'POST' => 'cart.add'],
     '/carrinho/atualizar' => ['POST' => 'cart.update'],
     '/carrinho/remover' => ['POST' => 'cart.remove'],
     '/carrinho/finalizar' => ['POST' => 'cart.finalize'],

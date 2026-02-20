@@ -48,8 +48,10 @@
       <div class="catalogo-container">
         <div class="conteudo-produto">
           <?php foreach ($produtos as $produto): ?>
-            <div class="produto" onclick="abrirProduto(<?php echo (int) $produto['id']; ?>)">
-              <img src="<?php echo asset_url('images/produtos/' . htmlspecialchars($produto['imagem'], ENT_QUOTES, 'UTF-8')); ?>" alt="<?php echo htmlspecialchars($produto['nome'], ENT_QUOTES, 'UTF-8'); ?>" />
+            <div class="produto">
+              <a href="<?php echo url('produto'); ?>?id=<?php echo (int) $produto['id']; ?>" class="produto-link-detalhe">
+                <img src="<?php echo asset_url('images/produtos/' . htmlspecialchars($produto['imagem'], ENT_QUOTES, 'UTF-8')); ?>" alt="<?php echo htmlspecialchars($produto['nome'], ENT_QUOTES, 'UTF-8'); ?>" />
+              </a>
               <div class="info-preco-sacola">
                 <?php if ((float) $produto['preco'] > 0): ?>
                   <span class="preco">R$ <?php echo number_format((float) $produto['preco'], 2, ',', '.'); ?></span>
@@ -57,13 +59,17 @@
                   <span class="preco indisponivel">Preço indisponível</span>
                 <?php endif; ?>
               </div>
-              <h3><?php echo htmlspecialchars($produto['nome'], ENT_QUOTES, 'UTF-8'); ?></h3>
+              <h3>
+                <a href="<?php echo url('produto'); ?>?id=<?php echo (int) $produto['id']; ?>" class="produto-link-detalhe">
+                  <?php echo htmlspecialchars($produto['nome'], ENT_QUOTES, 'UTF-8'); ?>
+                </a>
+              </h3>
               <?php if ((float) $produto['preco'] > 0): ?>
-                <form action="<?php echo url('carrinho/adicionar'); ?>" method="POST" onsubmit="pararPropagacao(event)">
+                <form action="<?php echo url('adicionar_ao_carrinho.php'); ?>" method="POST" onsubmit="pararPropagacao(event)" onclick="pararPropagacao(event)">
                   <?php echo csrf_field(); ?>
                   <input type="hidden" name="produto_id" value="<?php echo (int) $produto['id']; ?>">
                   <input type="hidden" name="quantidade" value="1">
-                  <button type="submit" class="btn-adicionar-sacola">Adicionar à sacola</button>
+                  <button type="submit" class="btn-adicionar-sacola" onclick="pararPropagacao(event)">Adicionar à sacola</button>
                 </form>
               <?php endif; ?>
             </div>
@@ -77,7 +83,6 @@
 
   <script src="<?php echo asset_url('js/carrossel.js'); ?>"></script>
   <script>
-    function abrirProduto(id) { window.location.href = '<?php echo url('produto'); ?>?id=' + id; }
     function pararPropagacao(event) { event.stopPropagation(); }
   </script>
   <?php include __DIR__ . '/../partials/store/scripts.php'; ?>

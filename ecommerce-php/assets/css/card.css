@@ -136,6 +136,12 @@ body {
     transition: all 0.25s ease;
 }
 
+.produto-link-detalhe {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+}
+
 @media (max-width: 1024px) {
     .produtos-grid {
         gap: 25px;

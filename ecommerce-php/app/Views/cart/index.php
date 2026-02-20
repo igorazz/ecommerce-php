@@ -50,7 +50,7 @@
         <tr>
           <td data-label="Produto"><?php echo htmlspecialchars($produto['nome'], ENT_QUOTES, 'UTF-8'); ?></td>
           <td data-label="Quantidade">
-            <form action="<?php echo url('carrinho/atualizar'); ?>" method="POST" class="form-quantidade">
+            <form action="<?php echo url('atualizar_carrinho.php'); ?>" method="POST" class="form-quantidade">
               <?php echo csrf_field(); ?>
               <input type="hidden" name="produto_id" value="<?php echo (int) $produto_id; ?>">
               <input type="number" name="quantidade" value="<?php echo (int) $quantidade; ?>" min="1" required onchange="this.form.submit()">
@@ -58,7 +58,7 @@
           </td>
           <td data-label="Preço">R$ <?php echo number_format((float) $produto['preco'], 2, ',', '.'); ?></td>
           <td data-label="Ação">
-            <form action="<?php echo url('carrinho/remover'); ?>" method="POST" class="d-inline">
+            <form action="<?php echo url('remover_do_carrinho.php'); ?>" method="POST" class="d-inline">
               <?php echo csrf_field(); ?>
               <input type="hidden" name="produto_id" value="<?php echo (int) $produto_id; ?>">
               <button type="submit" class="btn btn-link p-0">Remover</button>

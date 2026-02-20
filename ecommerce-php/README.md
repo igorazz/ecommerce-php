@@ -3,6 +3,10 @@
 Aplicação migrada para MVC com front controller principal em `public/index.php`.
 As URLs legadas ainda existem como fallback de compatibilidade.
 
+## Documentação dos ajustes
+
+- Histórico técnico das mudanças: `docs/AJUSTES_REALIZADOS.md`
+
 ## Estrutura
 
 - `app/Controllers`: regras de fluxo das páginas

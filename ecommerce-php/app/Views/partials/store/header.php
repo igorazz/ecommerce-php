@@ -28,7 +28,7 @@ $to = static fn(string $route = ''): string => url($route);
                 <?php endif; ?>
             </div>
 
-            <a href="<?php echo $to('carrinho'); ?>" class="icone-link sacola-link">
+            <a href="<?php echo $to('carrinho.php'); ?>" class="icone-link sacola-link">
                 <i class='bx bx-shopping-bag'></i>
                 <?php if ($total_itens_carrinho > 0): ?>
                     <span class="cart-notification"><?php echo $total_itens_carrinho; ?></span>

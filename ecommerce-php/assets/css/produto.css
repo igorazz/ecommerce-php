@@ -506,3 +506,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.btn-adicionar-sacola {
+  display: inline-block;
+  text-decoration: none;
+  text-align: center;
+}

@@ -23,17 +23,31 @@ class Cart
         }
 
         $dbCart = $this->loadFromDatabase($userId);
+        $mergedCart = $dbCart;
 
-        if (!empty($dbCart)) {
-            $_SESSION['carrinho'] = $dbCart;
-            return $dbCart;
+        // Prioritize session items to avoid losing recent additions when
+        // database synchronization fails partially.
+        foreach ($sessionCart as $productId => $quantity) {
+            $productId = (int) $productId;
+            $quantity = max(1, (int) $quantity);
+            if ($productId <= 0) {
+                continue;
+            }
+
+            if (isset($mergedCart[$productId])) {
+                $mergedCart[$productId] = max((int) $mergedCart[$productId], $quantity);
+            } else {
+                $mergedCart[$productId] = $quantity;
+            }
         }
 
-        if (!empty($sessionCart)) {
+        $_SESSION['carrinho'] = $mergedCart;
+
+        if (!empty($mergedCart)) {
             $this->syncSessionToDatabase();
         }
 
-        return $sessionCart;
+        return $mergedCart;
     }
 
     public function add(int $productId, int $quantity): void

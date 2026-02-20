@@ -16,6 +16,12 @@ if ($scriptBase !== '' && $scriptBase !== '/' && str_starts_with($path, $scriptB
 }
 
 $path = $path === '' ? '/' : '/' . ltrim($path, '/');
+$path = rawurldecode($path);
+
+if ($path !== '/' && str_ends_with($path, '/')) {
+    $path = rtrim($path, '/');
+}
+
 $method = strtoupper($_SERVER['REQUEST_METHOD'] ?? 'GET');
 
 $route = $routes[$path][$method] ?? null;

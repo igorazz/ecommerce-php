@@ -41,7 +41,7 @@ class CartController extends Controller
             }
         }
 
-        $this->redirect('carrinho');
+        $this->redirect('carrinho.php');
     }
 
     public function update(): void
@@ -55,7 +55,7 @@ class CartController extends Controller
             $this->cartModel->update($productId, $quantity);
         }
 
-        $this->redirect('carrinho');
+        $this->redirect('carrinho.php');
     }
 
     public function remove(): void
@@ -67,7 +67,7 @@ class CartController extends Controller
             $this->cartModel->remove($productId);
         }
 
-        $this->redirect('carrinho');
+        $this->redirect('carrinho.php');
     }
 
     public function finalize(): void
